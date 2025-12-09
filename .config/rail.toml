@@ -1,0 +1,110 @@
+# cargo-rail configuration for Polars
+# Optimized for the leanest build graph and precise change detection
+
+# Platform targets for multi-target validation
+targets = [
+  # Tier 2 (Common)
+  "wasm32-unknown-unknown",
+]
+
+[unify]
+include_paths = true
+include_renamed = true # polars uses renamed deps (memmap=memmap2, old_getrandom=getrandom)
+pin_transitives = false
+transitive_host = "root"
+exclude = []
+include = []
+msrv = true
+strict_version_compat = false
+exact_pin_handling = "warn"
+major_version_conflict = "bump"
+detect_unused = true
+remove_unused = true
+prune_dead_features = true
+max_backups = 3
+
+
+[release]
+tag_prefix = "v" # Prefix for all tags (used via {prefix} in tag_format)
+tag_format = "{crate}-{prefix}{version}" # Variables: {prefix}, {crate}, {version}
+require_clean = true
+publish_delay = 5
+create_github_release = false
+sign_tags = false
+changelog_path = "CHANGELOG.md"
+changelog_relative_to = "crate" # "crate" or "workspace" (default: crate)
+skip_changelog_for = []
+require_changelog_entries = false
+
+
+[change-detection]
+infrastructure = [
+  # CI/CD
+  ".github/workflows/**",
+  ".github/actions/**",
+  ".github/scripts/**",
+
+  # Build system
+  "Makefile",
+
+  # Rust workspace/toolchain
+  "Cargo.lock",
+  "rust-toolchain.toml",
+  "rustfmt.toml",
+
+  # Code quality
+  "dprint.json",
+  ".typos.toml",
+
+  # cargo-rail config
+  ".config/rail.toml",
+]
+
+[change-detection.custom]
+# Documentation (allows docs-only skip)
+docs = [
+  "docs/**",
+  "py-polars/docs/**",
+  "*.md",
+  "LICENSE",
+  "mkdocs.yml",
+]
+
+# Python bindings (py-polars)
+python = [
+  "py-polars/**",
+]
+
+# PyO3 bindings
+pyo3 = [
+  "pyo3-polars/**",
+]
+
+# Examples
+examples = [
+  "examples/**",
+]
+
+# Nix configuration
+nix = [
+  "*.nix",
+  "flake.lock",
+]
+
+
+# Split/Sync: Use 'cargo rail split init <crate>' to configure individual crates
+# Per-crate configuration uses [crates.<name>] sections:
+#
+# [crates.my-crate.split]
+# remote = "git@github.com:org/my-crate.git"
+# branch = "main"
+# mode = "single"  # "single" or "combined"
+# paths = [{ crate = "crates/my-crate" }]
+#
+# Split modes:
+#   single   - One crate per split repo (default)
+#   combined - Multiple crates share one split repo
+#              Use workspace_mode = "workspace" to mirror monorepo structure
+#
+# [crates.my-crate.release]
+# publish = true

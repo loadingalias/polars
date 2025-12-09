@@ -12,17 +12,6 @@ description = "Lazy query engine for the Polars DataFrame library"
 doctest = false
 
 [dependencies]
-libloading = { workspace = true, optional = true }
-polars-compute = { workspace = true }
-polars-core = { workspace = true, features = ["lazy", "zip_with", "random"] }
-polars-error = { workspace = true }
-polars-ffi = { workspace = true, optional = true }
-polars-io = { workspace = true, features = ["lazy", "csv"] }
-polars-json = { workspace = true, optional = true }
-polars-ops = { workspace = true, features = [] }
-polars-parquet = { workspace = true, optional = true }
-polars-time = { workspace = true, optional = true }
-polars-utils = { workspace = true }
 
 arrow = { workspace = true }
 bitflags = { workspace = true }
@@ -34,9 +23,20 @@ chrono-tz = { workspace = true, optional = true }
 either = { workspace = true }
 futures = { workspace = true, optional = true }
 hashbrown = { workspace = true }
+libloading = { workspace = true, optional = true }
 memmap = { workspace = true }
 num-traits = { workspace = true }
 percent-encoding = { workspace = true }
+polars-compute = { workspace = true }
+polars-core = { workspace = true, features = ["lazy", "zip_with", "random"] }
+polars-error = { workspace = true }
+polars-ffi = { workspace = true, optional = true }
+polars-io = { workspace = true, features = ["lazy", "csv"] }
+polars-json = { workspace = true, optional = true }
+polars-ops = { workspace = true, features = [] }
+polars-parquet = { workspace = true, optional = true }
+polars-time = { workspace = true, optional = true }
+polars-utils = { workspace = true }
 pyo3 = { workspace = true, optional = true }
 rayon = { workspace = true }
 recursive = { workspace = true }
@@ -87,7 +87,6 @@ temporal = [
 # debugging purposes
 fmt = ["polars-core/fmt"]
 strings = ["polars-core/strings", "polars-ops/strings"]
-future = []
 dtype-u8 = ["polars-core/dtype-u8"]
 dtype-u16 = ["polars-core/dtype-u16"]
 dtype-u128 = ["polars-core/dtype-u128", "polars-ops/dtype-u128"]
@@ -184,7 +183,6 @@ ewma_by = ["polars-ops/ewma_by"]
 dot_diagram = []
 unique_counts = ["polars-ops/unique_counts"]
 log = ["polars-ops/log"]
-chunked_ids = []
 list_to_struct = ["polars-ops/list_to_struct"]
 array_to_struct = ["polars-ops/array_to_struct"]
 row_hash = ["polars-core/row_hash", "polars-ops/hash"]
@@ -214,7 +212,6 @@ cutqcut = ["polars-ops/cutqcut"]
 rle = ["polars-ops/rle"]
 extract_groups = ["regex", "dtype-struct", "polars-ops/extract_groups"]
 ffi_plugin = ["libloading", "polars-ffi"]
-hive_partitions = []
 peaks = ["polars-ops/peaks"]
 cov = ["polars-ops/cov"]
 hist = ["polars-ops/hist"]

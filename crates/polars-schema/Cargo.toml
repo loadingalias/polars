@@ -19,7 +19,6 @@ serde = { workspace = true, optional = true }
 version_check = { workspace = true }
 
 [features]
-nightly = []
 serde = ["dep:serde", "serde/derive", "polars-utils/serde"]
 dsl-schema = ["dep:schemars", "polars-utils/dsl-schema"]
 

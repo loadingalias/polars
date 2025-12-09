@@ -10,8 +10,12 @@ description = "Lazy query engine for the Polars DataFrame library"
 
 [dependencies]
 arrow = { workspace = true }
+
+bitflags = { workspace = true }
 chrono = { workspace = true }
+either = { workspace = true }
 futures = { workspace = true, optional = true }
+memchr = { workspace = true }
 polars-compute = { workspace = true }
 polars-core = { workspace = true, features = ["lazy", "zip_with", "random"] }
 polars-expr = { workspace = true }
@@ -23,10 +27,6 @@ polars-plan = { workspace = true }
 polars-stream = { workspace = true, optional = true }
 polars-time = { workspace = true, optional = true }
 polars-utils = { workspace = true }
-
-bitflags = { workspace = true }
-either = { workspace = true }
-memchr = { workspace = true }
 pyo3 = { workspace = true, optional = true }
 rayon = { workspace = true }
 tokio = { workspace = true, optional = true }
@@ -85,7 +85,6 @@ temporal = [
 # debugging purposes
 fmt = ["polars-core/fmt", "polars-plan/fmt"]
 strings = ["polars-expr/strings", "polars-stream?/strings"]
-future = []
 
 dtype-full = [
   "dtype-array",

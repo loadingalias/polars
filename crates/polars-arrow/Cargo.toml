@@ -13,6 +13,17 @@ repository = { workspace = true }
 description = "Minimal implementation of the Arrow specification forked from arrow2"
 
 [dependencies]
+
+arrow-format = { workspace = true, optional = true, features = ["ipc"] }
+
+# For async arrow flight conversion
+async-stream = { version = "0.3", optional = true }
+
+# To efficiently cast numbers to strings
+atoi_simd = { workspace = true, optional = true }
+
+# avro support
+avro-schema = { workspace = true, optional = true }
 bitflags = { workspace = true }
 bytemuck = { workspace = true, features = ["must_cast"] }
 chrono = { workspace = true }
@@ -20,41 +31,28 @@ chrono = { workspace = true }
 chrono-tz = { workspace = true, optional = true }
 dyn-clone = { version = "1" }
 either = { workspace = true }
+
+ethnum = { workspace = true }
+
+# to write to parquet as a stream
+futures = { workspace = true, optional = true }
 half = { workspace = true, optional = false, features = ["num-traits", "bytemuck"] }
 hashbrown = { workspace = true }
+itoa = { workspace = true, optional = true }
+lz4 = { workspace = true, optional = true } #unified
 num-traits = { workspace = true }
 polars-error = { workspace = true }
 polars-schema = { workspace = true }
 polars-utils = { workspace = true }
+
+proptest = { workspace = true, optional = true }
 schemars = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 simdutf8 = { workspace = true }
-
-ethnum = { workspace = true }
-
-# To efficiently cast numbers to strings
-atoi_simd = { workspace = true, optional = true }
-itoa = { workspace = true, optional = true }
 streaming-iterator = { workspace = true }
-
-arrow-format = { workspace = true, optional = true, features = ["ipc"] }
-
-# for IPC compression
-lz4 = { version = "1.24", optional = true }
-zstd = { workspace = true, optional = true }
-
-# to write to parquet as a stream
-futures = { workspace = true, optional = true }
-
-# avro support
-avro-schema = { workspace = true, optional = true }
-
-# For async arrow flight conversion
-async-stream = { version = "0.3", optional = true }
-tokio = { workspace = true, optional = true, features = ["io-util"] }
-
-proptest = { workspace = true, optional = true }
 strum_macros = { workspace = true }
+tokio = { workspace = true, optional = true, features = ["io-util"] }
+zstd = { workspace = true, optional = true }
 
 [dev-dependencies]
 # used to run formal property testing
@@ -70,8 +68,8 @@ tokio = { workspace = true, features = ["macros", "rt", "fs", "io-util"] }
 version_check = { workspace = true }
 
 [target.wasm32-unknown-unknown.dependencies]
-getrandom = { version = "0.3", features = ["wasm_js"] }
-old_getrandom = { version = "0.2", features = ["js"], package = "getrandom" }
+getrandom = { workspace = true, features = ["wasm_js"] } #unified
+old_getrandom = { workspace = true, features = ["js"] } #unified
 
 [features]
 default = []
