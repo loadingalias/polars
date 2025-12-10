@@ -45,11 +45,7 @@ version_check = { workspace = true }
 # enable js feature for getrandom to work in wasm
 [target.'cfg(target_family = "wasm")'.dependencies]
 getrandom = { workspace = true, features = ["wasm_js"] } #unified
-<<<<<<< HEAD
 old_getrandom = { workspace = true, features = ["js"] } #unified
-=======
-old_getrandom = { version = "0.2", features = ["js"], package = "getrandom" }
->>>>>>> 905e24ad2 (cargo-rail-polars: updated unify for correct numbers in README of cargo-rail; fixed change-detection and CI workflow)
 
 [features]
 sql = ["polars-sql"]
