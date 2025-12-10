@@ -34,7 +34,41 @@ env:
   RUSTFLAGS: -C debuginfo=0  # Do not produce debug symbols to keep memory usage down
 
 jobs:
+  # --- Change detection using cargo-rail ---
+  detect:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      docs-only: ${{ steps.rail.outputs.docs-only }}
+      crates: ${{ steps.rail.outputs.crates }}
+      count: ${{ steps.rail.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: loadingalias/cargo-rail-action@v1
+        id: rail
+      - name: Determine if CI should run
+        id: check
+        shell: bash
+        run: |
+          # Always run on push to main
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "should-run=true" >> "$GITHUB_OUTPUT"
+          # Skip on docs-only PRs
+          elif [[ "${{ steps.rail.outputs.docs-only }}" == "true" ]]; then
+            echo "should-run=false" >> "$GITHUB_OUTPUT"
+          # Skip if no Rust crates affected
+          elif [[ "${{ steps.rail.outputs.count }}" == "0" ]]; then
+            echo "should-run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-run=true" >> "$GITHUB_OUTPUT"
+          fi
+
   clippy-nightly:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +86,8 @@ jobs:
 
   # Default feature set should compile on the stable toolchain
   clippy-stable:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +107,8 @@ jobs:
         run: cargo clippy --all-targets --locked -- -D warnings -D clippy::dbg_macro
 
   rustfmt:
-    if: github.ref_name != 'main'
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true' && github.ref_name != 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +120,8 @@ jobs:
         run: cargo fmt --all --check
 
   miri:
-    if: github.ref_name != 'main'
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true' && github.ref_name != 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

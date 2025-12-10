@@ -25,7 +25,41 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  # --- Change detection using cargo-rail ---
+  detect:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      docs-only: ${{ steps.rail.outputs.docs-only }}
+      crates: ${{ steps.rail.outputs.crates }}
+      count: ${{ steps.rail.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: loadingalias/cargo-rail-action@v1
+        id: rail
+      - name: Determine if CI should run
+        id: check
+        shell: bash
+        run: |
+          # Always run on push to main
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "should-run=true" >> "$GITHUB_OUTPUT"
+          # Skip on docs-only PRs
+          elif [[ "${{ steps.rail.outputs.docs-only }}" == "true" ]]; then
+            echo "should-run=false" >> "$GITHUB_OUTPUT"
+          # Skip if no Rust crates affected
+          elif [[ "${{ steps.rail.outputs.count }}" == "0" ]]; then
+            echo "should-run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-run=true" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -77,6 +111,8 @@ jobs:
           -p polars-utils
 
   integration-test:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
@@ -102,6 +138,8 @@ jobs:
         run: cargo test --all-features -p polars --test it
 
   check-features:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,6 +161,8 @@ jobs:
         run: cargo hack check -p polars --each-feature --no-dev-deps && cargo check -p polars-stream
 
   check-wasm:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -147,6 +187,8 @@ jobs:
         run: make check-wasm
 
   check-dsl-schema:
+    needs: detect
+    if: needs.detect.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
